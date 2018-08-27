@@ -11,6 +11,24 @@ abstract class BearerToken extends AccessToken
 
     protected $tokenKey = 'data.token';
 
+    public function requestToken(array $credentials, $toArray = false)
+    {
+        $response = $this->sendRequest($credentials);
+        $result = json_decode($response->getBody()->getContents(), true);
+        $formatted = $this->castResponseToType($response, $this->app['config']->get('response_type'));
+
+        if ($this->requestExpired($result)) {
+            $this->getCache()->delete($this->getCacheKey());
+
+            $response = $this->sendRequest($credentials);
+            $result = json_decode($response->getBody()->getContents(), true);
+        }
+
+        $this->validateResquestResult($result, $response, $formatted);
+
+        return $toArray ? $result : $formatted;
+    }
+
     public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
     {
         $token = $this->getToken()[$this->tokenKey] ?? null;
@@ -26,6 +44,8 @@ abstract class BearerToken extends AccessToken
     {
         parent::validateResquestResult($result, $response, $formatted);
     }
+
+    abstract public function requestExpired(array $response);
 
     abstract public function applyQuery(RequestInterface $request, array $requestOptions = []): RequestInterface;
 }
