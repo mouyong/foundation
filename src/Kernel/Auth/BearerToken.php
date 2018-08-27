@@ -22,5 +22,10 @@ abstract class BearerToken extends AccessToken
         return $this->applyQuery($request)->withHeader('Authorization', 'Bearer '.$token);
     }
 
+    public function validateResquestResult($result, $response, $formatted)
+    {
+        parent::validateResquestResult($result, $response, $formatted);
+    }
+
     abstract public function applyQuery(RequestInterface $request, array $requestOptions = []): RequestInterface;
 }
