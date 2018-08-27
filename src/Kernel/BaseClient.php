@@ -24,7 +24,7 @@ class BaseClient
     public function __construct(ServiceContainer $app, AccessTokenInterface $accessToken = null)
     {
         $this->app = $app;
-        $this->accessToken = $accessToken ?? $this->app['access_token'];
+        $this->accessToken = $accessToken ?? $this->app['accessToken'];
     }
 
     public function httpGet(string $url, array $query = [])
